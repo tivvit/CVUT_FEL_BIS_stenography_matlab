@@ -1,12 +1,13 @@
 function embed(iFileName,message,key,oFileName)
 clc;    
 close all; 
+clear all; 
 
 %1) load image imread
 i = imread('Lena.png');
 [height, width] = size(i);
 
-fprintf('%d',message)
+display(message)
 msgLength = length(message);
 
 %{
