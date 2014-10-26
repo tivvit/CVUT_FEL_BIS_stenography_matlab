@@ -1,1 +1,1 @@
-embed('testhomwork/Lena.png', 'ahoj', 1, 'out.png')
+embed('testhomwork/Lena.png', 12345, 1, 'out.png')
