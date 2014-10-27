@@ -24,16 +24,13 @@ if mod(length(binaryVector),8) ~= 0
 end
 binMatrix = reshape(binaryVector,8,100);
 %display(binMatrix);
-
+binstr = num2str(binMatrix);
+strs = binstr(1:end)
 for i=1:8:size(binMatrix,2),
-    binstr = num2str(binMatrix(i:i+8));
-    %strs = binstr(1:end)
-    
-    %e = i + 8;
-    
-    
-    %bin = binstr(i:e);
-    bin2dec(binstr)
+    i
+    e = i + 8;
+    bin = binstr(i:e);
+    bin2dec(bin);
 end
 %textString = char(binValues*binMatrix);    
 %disp(textString);

@@ -1,1 +1,2 @@
-embed('testhomwork/Lena.png', 12345, 1, 'out.png')
+%embed('Lena.png', 12345, 1, 'out.png')
+extract('out.png',1)
