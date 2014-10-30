@@ -29,7 +29,7 @@ for i = 1:(lengthLen * 8)
     end
 end
 
-len = bin2dec(l) - (lengthLen * 8);
+len = bin2dec(l) - (lengthLen * 8)
 
 %5) Decode message
 message = dec2bin(0, len);
@@ -39,10 +39,11 @@ for i = (lengthLen * 8) + 1:len + (lengthLen * 8)
     h = mod(rnd(i), height) + 1;
     w = floor(rnd(i) / width) + 1;
     
+    %{
     if(w > width)
         w = width
     end
-    
+    }
     imgChunk = img(w, h);
     
     if mod(imgChunk, 2) == 1

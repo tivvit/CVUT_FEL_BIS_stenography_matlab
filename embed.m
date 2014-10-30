@@ -65,14 +65,19 @@ end
     
     imgChunk = img(w, h);
     
-    y = mod(y, 8) + 1;
+    %y = mod(y, 8) + 1;
     
+    %{
     if y == 1
         x = x + 1;
     end 
+    %}
+    x = x + 1;
+    
+    %message(x)
     
     if mod(imgChunk, 2) == 1
-        if binaryMessage(x,y) == '0'
+        if message(x) == '0'
            if (array(i) == 1 || imgChunk == 0)
                img(w, h) = imgChunk + 1;
            else
@@ -80,7 +85,7 @@ end
            end
         end
     else
-        if binaryMessage(x,y) == '1'
+        if message(x) == '1'
            if (array(i) == 1 || imgChunk == 0)
                img(w, h) = imgChunk + 1;
            else
