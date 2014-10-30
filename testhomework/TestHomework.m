@@ -16,9 +16,6 @@ message=round(rand(msgLength,1));
 embed(image,message,key,'stego.png');
 extMessage=extract('stego.png',key);
 
-size(message)
-size(extMessage)
-
 if sum(message~=extMessage)==0
     fprintf('Message correctly extracted\n');
 else

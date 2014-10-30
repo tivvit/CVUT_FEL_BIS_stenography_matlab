@@ -19,7 +19,7 @@ l = dec2bin(0, lengthLen * 8);
 for i = 1:(lengthLen * 8)
     
     h = mod(rnd(i), height) + 1;
-    w = floor(rnd(i)/width) + 1;
+    w = ceil(rnd(i)/width);
     imgChunk = img(w, h);
     
     if mod(imgChunk, 2) == 1
@@ -29,34 +29,25 @@ for i = 1:(lengthLen * 8)
     end
 end
 
-len = bin2dec(l) - (lengthLen * 8)
+len = bin2dec(l);
 
 %5) Decode message
-message = dec2bin(0, len);
+message = zeros(len - (lengthLen * 8), 1);
 
-for i = (lengthLen * 8) + 1:len + (lengthLen * 8)
+for i = ((lengthLen * 8) + 1):len
     
     h = mod(rnd(i), height) + 1;
-    w = floor(rnd(i) / width) + 1;
+    w = ceil(rnd(i) / width);
 
     imgChunk = img(w, h);
     
     if mod(imgChunk, 2) == 1
-        m(i - (lengthLen * 8)) = '1';
+        message(i - (lengthLen * 8)) = 1;
     else
-        m(i - (lengthLen * 8)) = '0';
+        message(i - (lengthLen * 8)) = 0;
     end
 end
 
-for i = 1:(len/8)
-    tmp = dec2bin(0, 8);
-    
-    for j = 1:8
-        tmp(j) = m((i-1) * 8 + j);
-    end
-    
-    message(i, 1) = double(bin2dec(tmp));
-end
-
+%message = transpose(message)
 %message = transpose([char(message)]);
 end
