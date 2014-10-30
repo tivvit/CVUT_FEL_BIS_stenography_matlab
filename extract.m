@@ -38,22 +38,16 @@ for i = (lengthLen * 8) + 1:len + (lengthLen * 8)
     
     h = mod(rnd(i), height) + 1;
     w = floor(rnd(i) / width) + 1;
-    
-    %{
-    if(w > width)
-        w = width
-    end
-    }
+
     imgChunk = img(w, h);
     
     if mod(imgChunk, 2) == 1
-        message(i - (lengthLen * 8)) = '1';
+        m(i - (lengthLen * 8)) = '1';
     else
-        message(i - (lengthLen * 8)) = '0';
+        m(i - (lengthLen * 8)) = '0';
     end
 end
 
-%{
 for i = 1:(len/8)
     tmp = dec2bin(0, 8);
     
@@ -63,7 +57,6 @@ for i = 1:(len/8)
     
     message(i, 1) = double(bin2dec(tmp));
 end
-%}
 
 %message = transpose([char(message)]);
 end

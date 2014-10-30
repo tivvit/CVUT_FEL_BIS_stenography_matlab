@@ -8,8 +8,8 @@ img = imread(iFileName);
 
 msgLength = size(message, 1)
 lengthLen = 4;
-m = lengthLen * 8;
-m = m + msgLength %bit cnt
+m = lengthLen + msgLength;
+m = m * 8;  %bit cnt
 pixels = height * width;
 %imshow(img, []);
 
@@ -56,28 +56,16 @@ for i = (lengthLen * 8) + 1:m
     
     h = mod(rnd(i), height) + 1;
     w = floor(rnd(i)/width) + 1;
-    
-    %{
-if(w > width)
-        w = width
-end
-    %}
-    
+      
     imgChunk = img(w, h);
     
-    %y = mod(y, 8) + 1;
-    
-    %{
+    y = mod(y, 8) + 1;
     if y == 1
         x = x + 1;
     end 
-    %}
-    x = x + 1;
-    
-    %message(x)
     
     if mod(imgChunk, 2) == 1
-        if message(x) == '0'
+        if binaryMessage(x,y) == '0'
            if (array(i) == 1 || imgChunk == 0)
                img(w, h) = imgChunk + 1;
            else
@@ -85,7 +73,7 @@ end
            end
         end
     else
-        if message(x) == '1'
+        if binaryMessage(x,y) == '1'
            if (array(i) == 1 || imgChunk == 0)
                img(w, h) = imgChunk + 1;
            else
