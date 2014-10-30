@@ -6,75 +6,83 @@ close all;
 img = imread(iFileName);
 [height, width] = size(img);
 
-msgLength = size(message, 1);
-lengthLen = 8;
-m = lengthLen + msgLength;
-m = m * 8; %bit cnt
+msgLength = size(message, 1)
+lengthLen = 4;
+m = lengthLen * 8;
+m = m + msgLength %bit cnt
 pixels = height * width;
 %imshow(img, []);
 
 binaryLengthLen = dec2bin(m, lengthLen * 8);
-binaryMessage = dec2bin(message);
+binaryMessage = dec2bin(message, 8)
 
 %2) initiate PRNG
-%rng(key)
-randn('seed', key)
+rng(key);
 
 %3) random permute, same
-rand = randperm(pixels);
+rnd = randperm(pixels, pixels);
 array = randi([0 1], 1, m);
 
 %4) Encode message length
 for i = 1:(lengthLen*8)
-    h = mod(rand(i),height) + 1;
-    w = floor(rand(i)/width) + 1;
-    imgChunk = img(w,h,1);
+    
+    h = mod(rnd(i),height) + 1;
+    w = floor(rnd(i)/width) + 1;
+    imgChunk = img(w,h);
     
     if mod(imgChunk, 2) == 1
         if binaryLengthLen(i) == '0'
-            if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
-               imgChunk = imgChunk + 1;
+            if (array(i) == 1 || imgChunk == 0)
+               img(w,h) = imgChunk + 1;
            else
-               imgChunk = imgChunk - 1;
+               img(w,h) = imgChunk - 1;
             end
         end
     else
         if binaryLengthLen(i) == '1'
-           if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
-               imgChunk = imgChunk + 1;
+           if (array(i) == 1 || imgChunk == 0)
+               img(w,h) = imgChunk + 1;
            else
-               imgChunk = imgChunk - 1;
+               img(w,h) = imgChunk - 1;
            end
         end
     end
 end
                   
 %5) encode message           
-n = 0;
-f = 0;
+y = 0; x = 0;
+
 for i = (lengthLen * 8) + 1:m 
-    n = mod(n, 8) + 1;
-    if n == 1
-        f = f + 1;
-    end
-    h = mod( random(i),height) + 1;
-    w = floor(rand(i)/width) + 1;
-    imgChunk = img(w,h,1);
     
-    if mod(imgChunk,2) == 1
-        if binaryMessage(f,n) == '0'
-           if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
-               imgChunk = imgChunk + 1;
+    h = mod(rnd(i), height) + 1;
+    w = floor(rnd(i)/width) + 1;
+    
+    %{if(w > width)
+        w = width
+    end
+    
+    imgChunk = img(w, h);
+    
+    y = mod(y, 8) + 1;
+    
+    if y == 1
+        x = x + 1;
+    end 
+    
+    if mod(imgChunk, 2) == 1
+        if binaryMessage(x,y) == '0'
+           if (array(i) == 1 || imgChunk == 0)
+               img(w, h) = imgChunk + 1;
            else
-               imgChunk = imgChunk - 1;
+               img(w, h) = imgChunk - 1;
            end
         end
     else
-        if binaryMessage(f,n) == '1'
-           if (array(i) == 1  && imgChunk ~= 255 ) || img(w,h,1) == 0
-               imgChunk = imgChunk + 1;
+        if binaryMessage(x,y) == '1'
+           if (array(i) == 1 || imgChunk == 0)
+               img(w, h) = imgChunk + 1;
            else
-               imgChunk = imgChunk - 1;
+               img(w, h) = imgChunk - 1;
            end
         end
     end
