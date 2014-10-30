@@ -1,11 +1,61 @@
-function extract(image,key)
+function [message] = extract(image, key)
 clc;    
 close all; 
 
+%1) load image imread
 img = imread(image);
 [height, width] = size(img);
+lengthLen = 8;
+pixels = height * width;
 
-%For this example the max size is 100 bytes, or 800 bits, (bytes * = bits
+%2) initiate PRNG
+rng(key);
+
+%3) random permute, same
+random = randperm(pixels, pixels);
+b = dec2bin(0, lengthLen * 8);
+
+%4) Decode message length
+for i = 1:(lengthLen * 8)
+    h = mod(random(i),height) + 1;
+    w = floor(random(i)/width) + 1;
+    %im_temp = img(c,r,1);
+    %modul = mod(img(c,r,1),2);
+    if mod(img(c' ,r , 1),2) == 1
+        b(i) = '1';
+    else
+        b(i) = '0';
+    end
+end
+
+%5) Decode message
+msgSize = bin2dec(b) - (lengthLen * 8);
+m = dec2bin(0, msgSize);
+ 
+for i = 17:msgSize + (lengthLen * 8)
+    h = mod(rand(i), height) + 1;
+    w = floor(rand(i) / width) + 1;
+    
+    %modul = mod(img(c,r,1), 2);
+    
+    if mod(img(c,r,1), 2) == 1
+        m(i-(lengthLen * 8)) = '1';
+    else
+        m(i-(lengthLen * 8)) = '0';
+    end
+end
+
+message = zeros(msgSize/8,1);
+for i = 1:(msgSize/8)
+    tmp = dec2bin(0,8);
+    for j = 1:8
+        tmp(j) = m((i-1)*8+j);
+    end
+    message(i,1) = double(bin2dec(tmp));
+end
+
+
+%{
 m = 800;
 k = 1;
 for i = 1 : height
@@ -24,23 +74,19 @@ if mod(length(binaryVector),8) ~= 0
 end
 binMatrix = reshape(binaryVector,8,100);
 %display(binMatrix);
-binstr = num2str(binMatrix);
-strs = binstr(1:end)
+
 for i=1:8:size(binMatrix,2),
-    i
-    e = i + 8;
-    bin = binstr(i:e);
-    bin2dec(bin);
+    binstr = num2str(binMatrix(i:i+8));
+    %strs = binstr(1:end)
+    
+    %e = i + 8;
+    
+    
+    %bin = binstr(i:e);
+    bin2dec(binstr)
 end
 %textString = char(binValues*binMatrix);    
 %disp(textString);
-
-%{
-1)
-2)
-3) 
-4) rand message length  
-5) read message
-6)
 %}
+
 end

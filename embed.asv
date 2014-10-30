@@ -1,68 +1,87 @@
-function embed(iFileName,message,key,oFileName)
+function embed(iFileName, message, key, oFileName)
 clc;    
 close all; 
 
 %1) load image imread
-img = imread('Lena.png');
+img = imread(iFileName);
 [height, width] = size(img);
 
-fprintf('%d',message)
-msgLength = floor(log10(message)) + 1;
-m = msgLength * 8;
+msgLength = size(message, 1);
+lengthLen = 8;
+m = lengthLen + msgLength;
+m = m * 8; %bit cnt
+pixels = height * width;
+%imshow(img, []);
 
-%{
-AsciiCode = uint8(message); 
-binaryString = transpose(dec2bin(AsciiCode,8));
-binaryString = binaryString(:);
-N = length(binaryString);
-b = zeros(N,1); %b is a vector of bits
-%}
-
-imshow(img, []);
+binaryLengthLen = dec2bin(m, lengthLen * 8);
+binaryMessage = dec2bin(message);
 
 %2) initiate PRNG
-%generation of the random message
-%rng(1);
-%message=round(rand(msgLength,1));
+%rng(key)
+randn('seed', key)
 
 %3) random permute, same
-%{
-AsciiCode = uint8(message); 
-binaryString = transpose(dec2bin(AsciiCode,8));
-binaryString = binaryString(:);
-N = length(binaryString);
-%}
-b = zeros(msgLength,1); %b is a vector of bits
-
+rand = randperm(pixels);
+array = randi([0 1], 1, m);
 
 %4) Encode message length
-%s = c;
-s=img;
-k = 1; Array=[];l=1;my=1;
+for i = 1:(lengthLen*8)
+    h = mod(rand(i),height) + 1;
+    w = floor(rand(i)/width) + 1;
+    imgChunk = img(w,h,1);
+    
+    if mod(imgChunk, 2) == 1
+        if binaryLengthLen(i) == '0'
+            if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
+               imgChunk = imgChunk + 1;
+           else
+               imgChunk = imgChunk - 1;
+            end
+        end
+    else
+        if binaryLengthLen(i) == '1'
+           if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
+               imgChunk = imgChunk + 1;
+           else
+               imgChunk = imgChunk - 1;
+           end
+        end
+    end
+end
                   
-%5) encode message
-for i = 1 : height
-  for j = 1 : width
-       LSB = mod(double(img(i,j)), 2);
-       if (k>m || LSB == b(k))
-          s(i,j) = img(i,j);
-          l=k+1;
-      else 
-          if(LSB == 1)
-              s(i,j) = img(i,j) - 1;
-          else
-              s(i,j) = img(i,j) + 1;
-      Array(my)=l;
-      l=l+1;
-      my= my + 1;
-      end
-      k = k + 1;
-      end
-  end
+%5) encode message           
+n = 0;
+f = 0;
+for i = (lengthLen * 8) + 1:m 
+    n = mod(n, 8) + 1;
+    if n == 1
+        f = f + 1;
+    end
+    h = mod( random(i),height) + 1;
+    w = floor(rand(i)/width) + 1;
+    imgChunk = img(w,h,1);
+    
+    if mod(imgChunk,2) == 1
+        if binaryMessage(f,n) == '0'
+           if (array(i) == 1  && imgChunk ~= 255 ) || imgChunk == 0
+               imgChunk = imgChunk + 1;
+           else
+               imgChunk = imgChunk - 1;
+           end
+        end
+    else
+        if binaryMessage(f,n) == '1'
+           if (array(i) == 1  && imgChunk ~= 255 ) || img(w,h,1) == 0
+               imgChunk = imgChunk + 1;
+           else
+               imgChunk = imgChunk - 1;
+           end
+        end
+    end
 end
 
 %6) imwrite
-imwrite(s, oFileName)
+imwrite(img, oFileName)
 
 end
 
